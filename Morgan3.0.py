@@ -8,6 +8,7 @@ import pyttsx3
 import datetime
 import wikipedia
 import webbrowser
+import paramiko
 wikipedia.set_lang('es')
 engine= pyttsx3.init('sapi5')
 voices= engine.getProperty('voices')
@@ -26,16 +27,16 @@ def wishMe():
     else:
         speak("Buenas noches")
 wishMe()
-print('                   Morgan v1.0                    ')
+print('                   Morgan v0.3                  ')
 print()
 # AQUI SE AUTENTICA EL USUARIO Y BASE DE DATOS
 # DEBE SER EDITADO CON EL ARCHIVO MORGAN 2.0.PY
 # PARA ASI PODER ACCEDER AL REGISTRO DE ESTE
 # DEBE EDITAR EL URL DE LOS ARCHIVOS PARA ENTRAR AL PROGRAMA
-with open("/Users/dk34p/Desktop/data/user.pckl",'r') as usera:
+with open("user.pckl",'r') as usera:
     user=usera.read()
     usera.close()
-with open("/Users/dk34p/Desktop/data/pass.pckl",'r') as passa:
+with open("pass.pckl",'r') as passa:
     pas=passa.read()
     passa.close()
 print("Por favor, Ingrese el usuario")
@@ -64,7 +65,7 @@ while pasx!=pas:
     if pasx!=pas:
         print("Contraseña incorrecta. El programa se cerrará")
         speak('Contraseña incorecta. El programa se cerrará')
-        x=input()
+        input()
         os.system('cls')
         sys.exit()
 os.system('cls')
@@ -85,7 +86,6 @@ def tomarcomando():
         query = r.recognize_google(audio, language='es-mx')
         print(query)
     except Exception as e: #U KNOW PRINT E WAS A REPLY?
-        #print (e)
         print('Por favor dilo de nuevo')
         return "none"
     return query
@@ -93,13 +93,17 @@ if __name__ == "__main__":
     while True:
         query=tomarcomando().lower()
         if 'qué sabes sobre' in query:
-            print (query)
-            speak(f'Buscando en Wikipedia... por favor espere')
-            query= query.replace('qué sabes sobre', '')
-            results= wikipedia.summary(query, sentences=2)
-            speak("Según Wikipedia")
-            print(results)
-            speak(results)
+            try:                                                            #NUEVO METODO DE ERROR PARA MORGAN, ASÍ EL PROGRAMA NO SE CIERRA.
+                print (query)
+                speak(f'Buscando en Wikipedia... por favor espere')
+                query= query.replace('qué sabes sobre', '')
+                results= wikipedia.summary(query, sentences=2)
+                speak("Según Wikipedia")
+                print(results)
+                speak(results)
+            except Exception as e:
+                speak("Ha ocurrido un error intentando conectar a Wikipedia")
+            
         elif 'abre youtube' in query:
             print (query)
             webbrowser.open('www.youtube.com')
@@ -121,7 +125,7 @@ if __name__ == "__main__":
             print (query)
             strTime= datetime.datetime.now().strftime("%H:%M")
             print(strTime)
-            speak(f"La hora es {strTime}")
+            speak("La hora es {}".format(strTime))
         elif 'dime la hora' in query:
             print (query)
             strTime= datetime.datetime.now().strftime("%H:%M")
@@ -152,40 +156,44 @@ if __name__ == "__main__":
             speak('Terminal Limpiado.')
             os.system('cls')
         elif 'quién soy' in query:
-            with open('/Users/dk34p/desktop/data/nc.pckl', 'rb') as nc:
-                nca=pickle.load(nc)
-                nc.close()
-            with open('/Users/dk34p/desktop/data/ed.pckl','rb') as ed:
-                eda=pickle.load(ed)
-                ed.close()
-            with open('/Users/dk34p/desktop/data/fdn.pckl','rb') as fn:
-                fdn=pickle.load(fn)
-                fn.close()
-            with open('/Users/dk34p/desktop/data/rut.pckl','rb') as ru:
-                rut=pickle.load(ru)
-                ru.close()
-            with open('/Users/dk34p/desktop/data/city.pckl','rb') as cit:
-                city=pickle.load(cit)
-                cit.close()
-            with open('/Users/dk34p/desktop/data/celn.pckl','rb') as celn:
-                celna=pickle.load(celn)
-                celn.close()
-            print('--------------------------------')
-            print('           Tus datos son:       ')
-            print('--------------------------------')
-            print()
-            print("Nombre : ",nca)
-            speak(f'Su nombre es {nca}')
-            print("Edad:",eda)
-            speak(f'Tiene {eda} años')
-            print("Fecha de nacimiento: " ,fdn)
-            speak(f'Nació el {fdn}')
-            print('Rut:',rut)
-            speak(f'Su rut es {rut}')
-            print('Ciudad:',city)
-            speak(f'Vive en la ciudad de {city} ')
-            print(f'Número de teléfono:',celna)
-            speak(f'Su número de teléfono es {celna}')
+            try:
+                with open('/Users/dk34p/desktop/data/nc.pckl', 'r') as nc:
+                    nca=pickle.load(nc)
+                    nc.close()
+                with open('/Users/dk34p/desktop/data/ed.pckl','r') as ed:
+                    eda=pickle.load(ed)
+                    ed.close()
+                with open('/Users/dk34p/desktop/data/fdn.pckl','r') as fn:
+                    fdn=pickle.load(fn)
+                    fn.close()
+                with open('/Users/dk34p/desktop/data/rut.pckl','r') as ru:
+                    rut=pickle.load(ru)
+                    ru.close()
+                with open('/Users/dk34p/desktop/data/city.pckl','r') as cit:
+                    city=pickle.load(cit)
+                    cit.close()
+                with open('/Users/dk34p/desktop/data/celn.pckl','r') as celn:
+                    celna=pickle.load(celn)
+                    celn.close()
+                print('--------------------------------')
+                print('           Tus datos son:       ')
+                print('--------------------------------')
+                print()
+                print("Nombre : ",nca)
+                speak(f'Su nombre es {nca}')
+                print("Edad:",eda)
+                speak(f'Tiene {eda} años')
+                print("Fecha de nacimiento: " ,fdn)
+                speak(f'Nació el {fdn}')
+                print('Rut:',rut)
+                speak(f'Su rut es {rut}')
+                print('Ciudad:',city)
+                speak(f'Vive en la ciudad de {city} ')
+                print(f'Número de teléfono:',celna)
+                speak(f'Su número de teléfono es {celna}')
+            except Exception as e:
+                speak("No hay datos ingresados, lo siento {}".format(user))
+            
         elif 'apaga el equipo' in query:
             speak('Apagando el equipo')
             os.system('shutdown')
@@ -201,38 +209,7 @@ if __name__ == "__main__":
         elif 'suspender equipo' in query:
             speak('Suspendiendo el equipo')
             os.system('rundll32.exe powrprof.dll, SetSuspendState 0,1,0')
-        elif 'abrir gato' in query:
-            print("-----------------------")
-            print("    Hackeando NASA     ")
-            speak('Hackeando NASA')
-            print("-----------------------")
-            print()
-            print()
-            print("Inicio de Hackeo, espere")
-            speak('Inicio de hackeo, espere')
-            print('Hackeo al 10%')
-            speak('Hackeo al 10%')
-            print("Hackeo al 20%")
-            speak('Hackeo al 20%')
-            print('Hackeo al 30%')
-            speak('Hackeo al 30%')
-            print("Hackeo al 40%")
-            speak('Hackeo al 40%')
-            print('Hackeo al 50%')
-            speak('Hackeo al 50%')
-            print("Hackeo al 60%")
-            speak('Hackeo al 60%')
-            print('Hackeo al 70%')
-            speak('Hackeo al 70%')
-            print("Hackeo al 80%")
-            speak('Hackeo al 80%')
-            print('Hackeo al 90%')
-            speak('Hackeo al 90%')
-            print("Hackeo al 100%")
-            speak('Hackeo al 100%')
-            print('Hackeo completo')
-            speak('Hackeo completo')
-            speak(f'{user}... Según los documentos obtenidos. Hector es el ser mas wueón del universo')
+        
         elif 'te odio' in query:
             speak('No.. yo, yo, yo te amo no te vaaayaaaaaas. -muere-')
         elif 'establece alarma' in query:
@@ -310,6 +287,7 @@ if __name__ == "__main__":
             subprocess.Popen(['C:/Users/dk34p/AppData/Roaming/Telegram Desktop/Telegram.exe'])
             print("Abriendo Telegram")
             speak("Abriendo Telegram")
+        
 
 
         
